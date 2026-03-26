@@ -1,0 +1,78 @@
+name: Docker Build and Push
+
+on:
+  push:
+    branches:
+      - dev
+      - staging
+      - main
+
+env:
+  IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/cicd-assignment-2
+
+jobs:
+
+  # 🔹 DEV JOB
+  dev:
+    if: github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker Image (dev)
+        run: docker build -t $IMAGE_NAME:dev .
+
+      - name: Push Docker Image (dev)
+        run: docker push $IMAGE_NAME:dev
+
+
+  # 🔹 STAGING JOB
+  staging:
+    if: github.ref == 'refs/heads/staging'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker Image (staging)
+        run: docker build -t $IMAGE_NAME:staging .
+
+      - name: Push Docker Image (staging)
+        run: docker push $IMAGE_NAME:staging
+
+
+  # 🔹 PRODUCTION JOB
+  production:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker Image (production)
+        run: docker build -t $IMAGE_NAME:production .
+
+      - name: Push Docker Image (production)
+        run: docker push $IMAGE_NAME:production
